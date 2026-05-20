@@ -1,0 +1,9 @@
+../Src/rcc.c:4:6:RCC_AHB1_Init	2
+../Src/rcc.c:10:6:RCC_AHB1_Deinit	2
+../Src/rcc.c:16:6:RCC_APB1_Init	2
+../Src/rcc.c:22:6:RCC_APB1_Deinit	2
+../Src/rcc.c:28:6:RCC_APB2_Init	2
+../Src/rcc.c:34:6:RCC_APB2_Deinit	2
+../Src/rcc.c:46:10:RCC_GetAHBClk	7
+../Src/rcc.c:85:10:RCC_GetAPB1Clk	4
+../Src/rcc.c:110:10:RCC_GetAPB2Clk	4

@@ -1,0 +1,1 @@
+../Src/bootloader.c:11:6:bootloader_JumpToApplication	24	static,ignoring_inline_asm
