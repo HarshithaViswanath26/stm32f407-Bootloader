@@ -1,0 +1,21 @@
+# CubeMX generated — do not track
+*.ioc
+
+# Build output
+Debug/
+Release/
+*.elf
+*.hex
+*.bin
+*.map
+*.list
+
+# IDE metadata
+.settings/
+.cproject
+.project
+*.launch
+
+
+# commit your source code, ignore your build output.
+# avoids those all multiple O/P files that are produced over every build/run
