@@ -15,6 +15,7 @@ uint8_t flash_Unlock(void)
 	 * 1. Unlock FLASH_KEYR: proper sequence
 	 * 2. Check for lock bit in CR to be 0
 	 * lock bit is auto cleared by HW after unlock */
+	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
 	FLASH_REG->FLASH_KEYR =  0x45670123;
 	FLASH_REG->FLASH_KEYR =   0xCDEF89AB;
 	// above is a whole 32bit sequence, no need to shift by 16 for second
@@ -38,6 +39,20 @@ uint8_t flash_Lock(void)
 	return 1;
 }
 
+void flash_SetPrgSize(void)
+{
+	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
+
+	FLASH_REG->FLASH_CR &= ~(0x3 << 8);
+	FLASH_REG->FLASH_CR |= (byte32 << 8);
+	// for 3.3Vdd 8, 16 & 32 all possible
+	// select highest to cut down on CPU stall time
+
+	//while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG); // stall CPU to complete op
+	// need not stall here: no op only bit setting
+
+}
+
 void flash_SectorErase(uint8_t sector)
 {
 	// !! Never erase sector 0 since thats where bootloader is
@@ -55,16 +70,27 @@ void flash_SectorErase(uint8_t sector)
 	FLASH_REG->FLASH_CR &= ~(0xF << 3);
 	FLASH_REG->FLASH_CR |= (sector << 3);
 
-	FLASH_REG->FLASH_CR &= ~(0x3 << 8);
-	FLASH_REG->FLASH_CR |= (byte32 << 8);
-	// for 3.3Vdd 8, 16 & 32 all possible
-	// select highest to cut down on CPU stall time
-
 	FLASH_REG->FLASH_CR |= (1U << 16);
 
 
 	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG); // stall CPU to complete erase
+	FLASH_REG->FLASH_CR &= ~(1U << 1);  // clear SER
 }
+
+void flash_SectorWrite(uint32_t addr)
+{
+	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
+	//set PG
+	FLASH_REG->FLASH_CR |= (1U << 0);
+
+	uint32_t data = 0x12345678;
+	*(volatile uint32_t*)addr = data;
+
+	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
+	FLASH_REG->FLASH_CR &= ~(1U << 0);
+
+}
+
 
 void bootloader_JumpToApplication(void)
 {

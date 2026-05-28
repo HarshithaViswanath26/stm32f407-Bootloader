@@ -27,7 +27,9 @@ int main(void)
 {
 	//bootloader_JumpToApplication();
 	flash_Unlock();
+	flash_SetPrgSize();
 	flash_SectorErase(SECTOR5);
+	flash_SectorWrite(0x08020000);
 	flash_Lock();
     /* Loop forever */
 	while(1)

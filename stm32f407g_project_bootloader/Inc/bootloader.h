@@ -68,8 +68,10 @@ typedef enum
 // flash related APIs
 uint8_t flash_Unlock(void);
 uint8_t flash_Lock(void);
+void flash_SetPrgSize(void);
 
 void flash_SectorErase(uint8_t sector);
+void flash_SectorWrite(uint32_t addr);
 
 // bootloader related APIs
 void bootloader_JumpToApplication(void);
