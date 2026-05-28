@@ -25,7 +25,10 @@
 
 int main(void)
 {
-	bootloader_JumpToApplication();
+	//bootloader_JumpToApplication();
+	flash_Unlock();
+	flash_SectorErase(SECTOR5);
+	flash_Lock();
     /* Loop forever */
 	while(1)
 	{

@@ -38,6 +38,34 @@ uint8_t flash_Lock(void)
 	return 1;
 }
 
+void flash_SectorErase(uint8_t sector)
+{
+	// !! Never erase sector 0 since thats where bootloader is
+	// so the bootloader code gets broken, and halts mid way
+	/* 1. Poll BSY, wait until all ops over
+	 * 2. Set SER and select the sector to be erased
+	 * -- always set the PSIZE for any op in Flash - both write/erase
+	 * 3. Set STRT bit
+	 * 4. Poll until BSY is cleared */
+	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
+	// wait for any ongoing ops to finish
+
+	FLASH_REG->FLASH_CR |= (1U << 1);
+
+	FLASH_REG->FLASH_CR &= ~(0xF << 3);
+	FLASH_REG->FLASH_CR |= (sector << 3);
+
+	FLASH_REG->FLASH_CR &= ~(0x3 << 8);
+	FLASH_REG->FLASH_CR |= (byte32 << 8);
+	// for 3.3Vdd 8, 16 & 32 all possible
+	// select highest to cut down on CPU stall time
+
+	FLASH_REG->FLASH_CR |= (1U << 16);
+
+
+	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG); // stall CPU to complete erase
+}
+
 void bootloader_JumpToApplication(void)
 {
 	uint32_t appStartAddr = APP_FLASH_ADDR;
