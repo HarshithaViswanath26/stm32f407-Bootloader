@@ -26,11 +26,20 @@
 int main(void)
 {
 	//bootloader_JumpToApplication();
+	uint32_t addr = (uint32_t)0x08020000;
+	uint32_t len = 256;
+	uint32_t data[64];
+	uint32_t buffer[70];
+	for(uint8_t i = 0; i < len/4; i++)
+	{
+		data[i] = 0x12345678;
+	}
 	flash_Unlock();
 	flash_SetPrgSize();
 	flash_SectorErase(SECTOR5);
-	flash_SectorWrite(0x08020000);
+	flash_Write(addr, data, sizeof(data));
 	flash_Lock();
+	flash_Read(addr, buffer, sizeof(data));
     /* Loop forever */
 	while(1)
 	{

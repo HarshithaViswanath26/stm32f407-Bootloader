@@ -71,7 +71,9 @@ uint8_t flash_Lock(void);
 void flash_SetPrgSize(void);
 
 void flash_SectorErase(uint8_t sector);
-void flash_SectorWrite(uint32_t addr);
+void flash_Write(uint32_t addr, uint32_t* data, uint32_t len);
+void flash_Read(uint32_t addr, uint32_t* buffer, uint32_t len);
+
 
 // bootloader related APIs
 void bootloader_JumpToApplication(void);

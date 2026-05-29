@@ -77,18 +77,32 @@ void flash_SectorErase(uint8_t sector)
 	FLASH_REG->FLASH_CR &= ~(1U << 1);  // clear SER
 }
 
-void flash_SectorWrite(uint32_t addr)
+void flash_Write(uint32_t addr, uint32_t* data, uint32_t len)
 {
 	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
 	//set PG
 	FLASH_REG->FLASH_CR |= (1U << 0);
 
-	uint32_t data = 0x12345678;
-	*(volatile uint32_t*)addr = data;
+	//uint32_t data = 0x12345678;
+	for(uint32_t i = 0; i < len/4; i++)
+	{
+		*(volatile uint32_t*)(addr + (i*4)) = data[i];
+		while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
+	}
 
-	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
 	FLASH_REG->FLASH_CR &= ~(1U << 0);
 
+}
+
+void flash_Read(uint32_t addr, uint32_t* buffer, uint32_t len)
+{
+	while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
+
+	for(uint32_t i = 0; i < len/4; i++)
+	{
+		buffer[i] = *(volatile uint32_t*)(addr + (i*4));
+		while(FLASH_REG->FLASH_SR & FLASH_BSY_FLAG);
+	}
 }
 
 
